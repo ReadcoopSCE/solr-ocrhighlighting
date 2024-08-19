@@ -25,6 +25,8 @@ public class OcrBox implements Comparable<OcrBox> {
   private float uly = -1;
   private float lrx = -1;
   private float lry = -1;
+  private String rId = "";
+  private String lId = "";
   private UUID highlightSpan;
   private Integer parentRegionIdx;
   private String dehyphenatedForm;
@@ -60,6 +62,16 @@ public class OcrBox implements Comparable<OcrBox> {
     addDimension(snipRegion, "uly", this.getUly());
     addDimension(snipRegion, "lrx", this.getLrx());
     addDimension(snipRegion, "lry", this.getLry());
+    if (this.getRid() != null) {
+      if (!this.getRid().isEmpty()) {
+        snipRegion.add("rId", this.getRid());
+      }
+    }
+    if (this.getLid() != null) {
+      if (!this.getLid().isEmpty()) {
+        snipRegion.add("lId", this.getLid());
+      }
+    }
     if (this.getText() != null) {
       snipRegion.add("text", this.getText());
     }
@@ -188,6 +200,14 @@ public class OcrBox implements Comparable<OcrBox> {
     return lry;
   }
 
+  public String getRid() {
+    return rId;
+  }
+
+  public String getLid() {
+    return lId;
+  }
+
   public float getWidth() {
     return lrx - ulx;
   }
@@ -265,6 +285,14 @@ public class OcrBox implements Comparable<OcrBox> {
 
   public void setLry(float lry) {
     this.lry = lry;
+  }
+
+  public void setRid(String rId) {
+    this.rId = rId;
+  }
+
+  public void setLid(String lId) {
+    this.lId = lId;
   }
 
   public void setHighlightSpan(UUID highlightId) {

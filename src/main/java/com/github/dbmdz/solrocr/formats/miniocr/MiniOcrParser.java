@@ -21,6 +21,8 @@ public class MiniOcrParser extends OcrParser {
   private boolean noMoreWords;
   private OcrPage currentPage;
   private OcrBox hyphenEnd = null;
+  private String currentLine;
+  private String currentRegion;
 
   public MiniOcrParser(Reader input, OcrParser.ParsingFeature... features)
       throws XMLStreamException {
@@ -48,6 +50,10 @@ public class MiniOcrParser extends OcrParser {
     OcrBox box = new OcrBox();
     if (features.contains(ParsingFeature.COORDINATES)) {
       String[] coords = xmlReader.getAttributeValue("", "x").split(" ");
+
+      box.setRid(currentRegion);
+      box.setLid(currentLine);
+
       if (coords.length > 0) {
         box.setUlx(Float.parseFloat(coords[0]));
       }
@@ -174,6 +180,12 @@ public class MiniOcrParser extends OcrParser {
       int nextEvent = xmlReader.next();
       if (nextEvent == XMLStreamConstants.START_ELEMENT) {
         String localName = xmlReader.getLocalName();
+        if ("b".equals(localName)) {
+          currentRegion = xmlReader.getAttributeValue("", "id");
+        }
+        if ("l".equals(localName)) {
+          currentLine = xmlReader.getAttributeValue("", "id");
+        }
         if ("w".equals(localName)) {
           foundWord = true;
           break;
