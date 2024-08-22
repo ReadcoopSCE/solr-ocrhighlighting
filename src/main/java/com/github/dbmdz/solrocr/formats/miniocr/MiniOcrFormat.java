@@ -14,8 +14,13 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.xml.stream.XMLStreamException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MiniOcrFormat implements OcrFormat {
+
+  private Logger logger = LoggerFactory.getLogger(MiniOcrFormat.class);
+
   private static final Pattern pagePat =
       Pattern.compile(
           "<p (?:xml)?:id=(\"|')(?<pageId>.+?)(\"|') ?(?:wh=(\"|')(?<width>\\d+) (?<height>\\d+)(\"|'))?>");
@@ -64,8 +69,9 @@ public class MiniOcrFormat implements OcrFormat {
 
   @Override
   public boolean hasFormat(String ocrChunk) {
+    boolean hasOcrTag = ocrChunk.contains("<ocr>"); // bugFix for empty page files
     return blockTagMapping.values().stream()
-        .filter(t -> !t.equals("p")) // leads to false positives on hOCR content
+        .filter(t -> !t.equals("p") || hasOcrTag) // leads to false positives on hOCR content
         .anyMatch(t -> ocrChunk.contains("<" + t + " ") || ocrChunk.contains("<" + t + ">"));
   }
 
